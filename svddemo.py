@@ -12,7 +12,7 @@ app = Flask(__name__)
 @app.route("/")
 def demo():
     con = pymongo.Connection(os.getenv("MONGOHQ_URL"))
-    return render_template("select_favorites.html", ip=request.remote_addr)
+    return render_template("select_favorites.html", ip=request.headers.get("X-Forwarded-For", request.remote_addr))
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
