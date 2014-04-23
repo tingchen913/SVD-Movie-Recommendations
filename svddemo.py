@@ -1,4 +1,5 @@
 import os
+import numpy
 import pymongo
 
 from flask import Flask
