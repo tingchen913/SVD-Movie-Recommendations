@@ -1,11 +1,14 @@
 import os
+import pymongo
+
 from flask import Flask
 
 app = Flask(__name__)
 
 
 @app.route("/")
-def hello():
+def demo():
+    con = pymongo.Connection(os.getenv("MONGOHQ_URL"))
     return "Hello world!"
 
 if __name__ == "__main__":
