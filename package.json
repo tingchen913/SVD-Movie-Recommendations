@@ -1,0 +1,10 @@
+{
+  "name": "svddemo",
+  "version": "0.0.0",
+  "description": "Interactive demonstration of singular value decomposition (svd) in the context of recommendation systems",
+  "main": "app.js",
+  "private": true,
+  "dependencies": {
+    "express": "~3.5.2"
+  }
+}
