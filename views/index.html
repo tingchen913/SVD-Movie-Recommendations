@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello</title>
+    <script src="/jquery.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            var socket = io.connect("{{ request.protocol }}://{{ request.headers.host }}");
+
+            socket.on("sendmessage", function(data) {
+                console.log(data);
+            })
+
+
+            $("#send").click(function() {
+                socket.emit("sendmessage");
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Hello world</h1>
+    <br>
+
+    <br>
+    <button id="send">Send</button>
+</body>
+</html>
