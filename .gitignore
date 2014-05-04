@@ -25,4 +25,3 @@ build/Release
 node_modules
 
 .env
-public/posters/*.jpg
