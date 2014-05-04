@@ -7,6 +7,7 @@
   "dependencies": {
     "cheerio": "0.15.0",
     "consolidate": "0.10.0",
+    "cookie": "0.1.2",
     "ejs": "1.0.0",
     "express": "3.5.2",
     "express-jquery": "1.8.3",

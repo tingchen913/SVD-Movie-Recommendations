@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>SVD Movie Recommendations</title>
-    <meta name="viewport" content="initial-scale=1">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no">
 
     <link href="/static/style.css" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
@@ -11,24 +11,26 @@
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.0/fastclick.min.js"></script>
+
     <script>
         $(function() {
             FastClick.attach(document.body);
-
             var socket = io.connect("<%= request.protocol %>://<%= request.headers.host %>");
-
-            socket.on("sendmessage", function(data) {
-                console.log(data);
-            })
-
-
-            $("#send").click(function() {
-                socket.emit("sendmessage");
-            });
 
             $(".movie").click(function() {
                 $(this).toggleClass("favorited");
                 $(".heart i", this).toggleClass("fa-heart fa-heart-o");
+                var movieID = $(this).data("id");
+
+                if ($(this).hasClass("favorited")) {
+                    socket.emit("addFavorite", movieID, function(ack) {
+                        console.log(ack);
+                    });
+                } else {
+                    socket.emit("removeFavorite", movieID, function(ack) {
+                        console.log(ack);
+                    });
+                }
             });
         });
     </script>
@@ -45,9 +47,9 @@
                 <h3><%= moviesByYear[i].year %></h3>
                 <ul class="movies">
                     <% for(var j=0; j < moviesByYear[i].movies.length; ++j) {%>
-                        <li class="movie" data-id="<%= moviesByYear[i].movies[j]._id %>">
+                        <li class="movie<%if (moviesByYear[i].movies[j].favorited){%> favorited<%}%>" data-id="<%= moviesByYear[i].movies[j]._id %>">
                             <div class="heart">
-                                <i class="fa fa-heart-o"></i>
+                                <i class="fa fa-heart<%if (!moviesByYear[i].movies[j].favorited){%>-o<%}%>"></i>
                             </div>
                             <div class="poster">
                                 <img src="/static/posters/<%= moviesByYear[i].movies[j]._id %>.jpg">
