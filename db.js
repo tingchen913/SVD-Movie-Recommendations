@@ -15,8 +15,8 @@ var connect = function(fn) {
     });
 
     mongoose.connection.on("disconnected", function() {
-        console.error("Disconnected from MongoDB. Reconnecting...");
-        connect();
+        console.error("Disconnected from MongoDB!");
+        // connect();
     });
 };
 
