@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 
-var connect = function(fn) {
+var connect = function() {
     var mongoUri = process.env.MONGOHQ_URL;
     mongoose.connect(mongoUri, function(err, rs) {
         if (err) {

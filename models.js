@@ -10,5 +10,12 @@ var userSchema = new mongoose.Schema({
     favorites: [mongoose.Schema.Types.ObjectId]
 });
 
-exports.Movie = mongoose.model("movies", movieSchema);
-exports.User = mongoose.model("users", userSchema);
+var configSchema = new mongoose.Schema({
+    key: String,
+    value: mongoose.Schema.Types.Mixed
+});
+
+
+exports.Movie = mongoose.model("Movie", movieSchema);
+exports.User = mongoose.model("User", userSchema);
+exports.Config = mongoose.model("Config", configSchema, "config");

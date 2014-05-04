@@ -11,28 +11,30 @@
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-
-    <script type="text/x-mathjax-config">
-        MathJax.Hub.Config({tex2jax: {inlineMath: [["$","$"], ["\\(","\\)"]]}});
-    </script>
-    <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
     <script>
         $(function() {
             var socket = io.connect("<%= request.protocol %>://<%= request.headers.host %>");
 
-            socket.on("reload", function() {
-                location.reload();
+            $("#finalize-button").click(function() {
+                socket.emit("toggleSiteMode", function(resultsCompiled) {
+                    if (resultsCompiled) {
+                        $("#finalize-button").text("Reopen voting");
+                    } else {
+                        $("#finalize-button").text("Finalize voting and redirect everyone to the results");
+                    }
+                });
             });
-
         });
     </script>
+
 </head>
 <body>
     <div id="header">
         <h1>SVD Movie Recommendations</h1>
-        <h2>Your personalized results</h2>
+        <h2>Admin Dashboard</h2>
     </div>
-
+    <div id="controls">
+        <button id="finalize-button"><% if (resultsCompiled) { %>Reopen voting<% } else { %>Finalize favorites and move everyone to the results page<% } %></button>
+    </div>
 </body>
 </html>
