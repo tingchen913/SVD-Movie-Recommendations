@@ -22,7 +22,7 @@
             var socket = io.connect("<%= request.protocol %>://<%= request.headers.host %>");
 
             socket.on("reload", function() {
-                location.reload();
+                location.reload(true);
             });
 
         });
