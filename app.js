@@ -19,6 +19,7 @@ app.engine("html", engines.ejs);
 app.use("/static", express.static(__dirname + "/public"));
 app.use(express.cookieParser());
 app.use(express.urlencoded());
+app.use(express.compress());
 app.use(express.session({secret: process.env.SECRET_KEY}));
 app.use(logfmt.requestLogger());
 
