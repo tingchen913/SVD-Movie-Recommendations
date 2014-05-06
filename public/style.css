@@ -91,6 +91,8 @@ h3 {
 
 .poster img {
     vertical-align: bottom;
+    height: 50px;
+    width: 34px;
 }
 
 .heart {
