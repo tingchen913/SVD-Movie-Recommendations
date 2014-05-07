@@ -11,7 +11,7 @@ var mongoose = require("mongoose");
 
 var app = express();
 var server = http.createServer(app);
-var io = require("socket.io").listen(server);
+var io = require("socket.io").listen(8888);
 
 require("./db.js").connect();
 
