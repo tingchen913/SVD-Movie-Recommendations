@@ -19,7 +19,7 @@
 
     <script>
         $(function() {
-            var socket = io.connect("<%= request.protocol %>://<%= request.headers.host %>");
+            var socket = io.connect();
 
             socket.on("reload", function() {
                 location.reload(true);
