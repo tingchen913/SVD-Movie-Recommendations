@@ -69,8 +69,6 @@ app.get("/", function(req, res) {
                                 });
                             });
 
-
-
                             context = {
                                 request: req,
                                 moviesByYear: moviesByYear,
