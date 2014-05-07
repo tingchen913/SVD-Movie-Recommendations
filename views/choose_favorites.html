@@ -16,7 +16,7 @@
     <script>
         $(function() {
             FastClick.attach(document.body);
-            var socket = io.connect();
+            var socket = io.connect("<%= request.protocol %>://<%= request.headers.host %>:8888");
 
             $(".movie").click(function() {
                 $(this).toggleClass("favorited");
