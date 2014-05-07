@@ -48,12 +48,14 @@ http.get(url, function(result) {
                 _id: id
             });
 
-            movie.save(function (err) {
-                if (err)
-                    console.log("Error saving model: " + err);
-                else
-                    console.log("Saved model");
-            });
+            if (year >= 2000) {
+                movie.save(function (err) {
+                    if (err)
+                        console.log("Error saving model: " + err);
+                    else
+                        console.log("Saved model");
+                });
+            }
         });
     });
 
