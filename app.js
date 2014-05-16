@@ -44,9 +44,11 @@ app.get("/", function(req, res) {
                         if (err) {
                             console.log(err);
                         } else {
-                            _.each(user.recommendations, function(movie) {
-                                recommendations.push(movie);
-                            });
+                            if(user) {
+			        _.each(user.recommendations, function(movie) {
+                                    recommendations.push(movie);
+                                });
+                            }
                         }
                         res.render("results.html", {recommendations: recommendations});
                     }).populate("recommendations");

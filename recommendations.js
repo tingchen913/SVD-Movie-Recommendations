@@ -11,6 +11,9 @@ var getColumns = function(M, k) {
 var processData = function(movies, users, callback) {
     // M[movie][user] = favorited
 
+    if (users.length == 0)
+        return;
+    
     var movieIdToIndex = {};
     var indexToMovieId = {};
     var index = 0;
