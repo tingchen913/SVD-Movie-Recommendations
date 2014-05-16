@@ -67,7 +67,7 @@ var processData = function(movies, users, callback) {
                         var u2 = VT[j];
 
                         var cosineSimilarity = (1.0*(u1[0]*u2[0] + u1[1]*u2[1]))/(Math.sqrt((u1[0]*u1[0] + u1[1]*u1[1])*(u2[0]*u2[0] + u2[1]*u2[1])).toFixed(3));
-                        if (cosineSimilarity > 0.9) {
+                        if (cosineSimilarity > 0.7) {
                             var recs = _.difference(users[j].favorites.map(str), users[i].favorites.map(str));
                             u1recs = u1recs.concat(recs);
                         }
