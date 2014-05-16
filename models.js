@@ -7,7 +7,8 @@ var movieSchema = new mongoose.Schema({
 
 var userSchema = new mongoose.Schema({
     _id: String,
-    favorites: [mongoose.Schema.Types.ObjectId]
+    favorites: [mongoose.Schema.Types.ObjectId],
+    recommendations: [{type: mongoose.Schema.Types.ObjectId, ref: "Movie"}]
 });
 
 var configSchema = new mongoose.Schema({

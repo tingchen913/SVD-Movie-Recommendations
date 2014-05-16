@@ -8,10 +8,10 @@ var http = require("http");
 var logfmt = require("logfmt");
 var models = require("./models.js");
 var mongoose = require("mongoose");
+var recommendations = require("./recommendations.js");
 
 var app = express();
 var server = http.createServer(app);
-var io = require("socket.io").listen(8888);
 
 require("./db.js").connect();
 
@@ -25,12 +25,33 @@ app.use(logfmt.requestLogger());
 
 
 app.get("/", function(req, res) {
-    config.get("resultsCompiled", function(resultsCompiled) {
-        if (resultsCompiled) {
-            context = {
-                request: req
-            };
-            res.render("results.html", context);
+    config.get("votingOpen", function(votingOpen) {
+        if (!votingOpen) {
+            var userID;
+            if (!("userID" in req.cookies)) {
+                res.render("results.html", {recommendations: []});
+                return;
+            } else {
+                userID = req.cookies.userID;
+            }
+
+            models.User.findById(userID, function(err, user) {
+                if (err) {
+                    console.error(err);
+                } else {
+                    var recommendations = [];
+                    models.User.findOne({_id: userID}, function(err, user) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            _.each(user.recommendations, function(movie) {
+                                recommendations.push(movie);
+                            });
+                        }
+                        res.render("results.html", {recommendations: recommendations});
+                    }).populate("recommendations");
+                }
+            });
         } else {
             var userID;
             if (!("userID" in req.cookies)) {
@@ -94,10 +115,10 @@ function checkAuth(req, res, next) {
 }
 
 app.get("/admin", checkAuth, function(req, res) {
-    config.get("resultsCompiled", function(resultsCompiled) {
+    config.get("votingOpen", function(votingOpen) {
         res.render("admin.html", {
             request: req,
-            resultsCompiled: resultsCompiled
+            votingOpen: votingOpen
         });
     });
 });
@@ -120,63 +141,62 @@ app.get("/logout", function (req, res) {
     res.redirect("/admin");
 });
 
-io.sockets.on("connection", function(socket) {
-    console.log("Socket connected");
-    var userID = cookie.parse(socket.handshake.headers.cookie)["userID"];
 
-    socket.on("addFavorite", function(movieID, callback) {
-        if (userID) {
-            models.User.update({_id: userID}, {$addToSet: {favorites: movieID}}, {upsert: true}, function(err){
-                if (err) {
-                    console.error("Error adding favorite: " + err);
-                    callback("Error adding favorite: " + err);
-                } else {
-                    console.log("Favorite " + movieID + " added for user " + userID);
-                    callback("Favorite " + movieID + " added");
-                }
-            });
-        } else {
-            console.error("No 'userID' cookie set");
-            callback("No 'userID' cookie set");
-        }
-    });
+app.post("/favorites/add", function(req, res) {
+    var userID = req.cookies.userID;
+    var movieID = req.param("movieID");
 
-    socket.on("removeFavorite", function(movieID, callback) {
-        if (userID) {
-            models.User.update({_id: userID}, {$pull: {favorites: movieID}}, {upsert: true}, function(err){
-                if (err) {
-                    console.error("Error removing favorite: " + err);
-                    callback("Error removing favorite: " + err);
-                } else {
-                    console.log("Favorite " + movieID + " removed for user " + userID);
-                    callback("Favorite " + movieID + " removed");
-                }
-            });
-        } else {
-            console.error("No 'userID' cookie set");
-            callback("No 'userID' cookie set");
-        }
-    });
-
-    socket.on("toggleSiteMode", function(callback) {
-        config.get("resultsCompiled", function(resultsCompiled) {
-            if (resultsCompiled) {
-                config.set("resultsCompiled", false, function() {
-                    callback(false);
-                    socket.broadcast.emit("reload");
-                });
-                socket.broadcast.emit("reload");
-
+    if (userID) {
+        models.User.update({_id: userID}, {$addToSet: {favorites: movieID}}, {upsert: true}, function(err){
+            if (err) {
+                console.error("Error adding favorite: " + err);
+                res.send("Error adding favorite: " + err);
             } else {
-                config.set("resultsCompiled", true, function() {
-                    callback(true);
-                    socket.broadcast.emit("reload");
-                });
-
+                console.log("Favorite " + movieID + " added for user " + userID);
+                res.send("Favorite " + movieID + " added");
             }
         });
-    });
+    } else {
+        console.error("No 'userID' cookie set");
+        res.send("No 'userID' cookie set");
+    }
+});
 
+app.post("/favorites/remove", function(req, res) {
+    var userID = req.cookies.userID;
+    var movieID = req.param("movieID");
+
+    if (userID) {
+        models.User.update({_id: userID}, {$pull: {favorites: movieID}}, {upsert: true}, function(err){
+            if (err) {
+                console.error("Error removing favorite: " + err);
+                res.send("Error removing favorite: " + err);
+            } else {
+                console.log("Favorite " + movieID + " removed for user " + userID);
+                res.send("Favorite " + movieID + " removed");
+            }
+        });
+    } else {
+        console.error("No 'userID' cookie set");
+        res.send("No 'userID' cookie set");
+    }
+});
+
+app.post("/toggleSiteMode", function(req, res) {
+    config.get("votingOpen", function(votingOpen) {
+        if (votingOpen) {
+            config.set("votingOpen", false, function() {
+                recommendations.generateRecommendations(function(){
+                    res.send("false");
+                });
+            });
+        } else {
+            config.set("votingOpen", true, function() {
+                res.send("true");
+            });
+
+        }
+    });
 });
 
 var port = Number(process.env.PORT || 5555);

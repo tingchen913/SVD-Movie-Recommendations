@@ -10,18 +10,21 @@
     <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+
     <script>
         $(function() {
-            var socket = io.connect("<%= request.protocol %>://<%= request.headers.host.split(':')[0] %>:8888");
-
             $("#finalize-button").click(function() {
-                socket.emit("toggleSiteMode", function(resultsCompiled) {
-                    if (resultsCompiled) {
-                        $("#finalize-button").text("Reopen voting");
+                $.ajax({
+                    type: "POST",
+                    url: "/toggleSiteMode",
+                }).done(function(status) {
+                    if(status=="true") {
+                        $("#finalize-button").text("Close Voting");
                     } else {
-                        $("#finalize-button").text("Finalize voting and redirect everyone to the results");
+                        $("#finalize-button").text("Open Voting");
                     }
+                }).fail(function() {
+                    console.err("Error toggling site mode");
                 });
             });
         });
@@ -34,7 +37,7 @@
         <h2>Admin Dashboard</h2>
     </div>
     <div id="controls">
-        <button id="finalize-button"><% if (resultsCompiled) { %>Reopen voting<% } else { %>Finalize favorites and move everyone to the results page<% } %></button>
+        <button id="finalize-button"><% if (votingOpen) { %>Close Voting<% } else { %>Open voting<% } %></button>
     </div>
 </body>
 </html>
