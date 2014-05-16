@@ -25,6 +25,9 @@
     <ul class="movie-groups">
         <li class="movie-group">
             <ul class="movies">
+                <% if (recommendations.length == 0) {%>
+                    <li class="movie">No recommendations available</li>
+                <% } %>
                 <% for(var i=0; i < recommendations.length; ++i) {%>
                     <li class="movie">
                         <div class="poster">
