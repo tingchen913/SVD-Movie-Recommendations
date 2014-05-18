@@ -17,14 +17,15 @@
                 $.ajax({
                     type: "POST",
                     url: "/toggleSiteMode",
+		    error: function() {
+			console.error("Error toggling site mode");
+		    }
                 }).done(function(status) {
                     if(status=="true") {
                         $("#finalize-button").text("Close Voting");
                     } else {
                         $("#finalize-button").text("Open Voting");
                     }
-                }).fail(function() {
-                    console.err("Error toggling site mode");
                 });
             });
         });

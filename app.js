@@ -26,7 +26,7 @@ app.use(logfmt.requestLogger());
 
 app.get("/", function(req, res) {
     config.get("votingOpen", function(votingOpen) {
-        if (!votingOpen) {
+        if (votingOpen=="false") {
             var userID;
             if (!("userID" in req.cookies)) {
                 res.render("results.html", {recommendations: []});

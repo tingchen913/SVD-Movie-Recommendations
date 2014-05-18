@@ -15,6 +15,41 @@
     <script>
         $(function() {
             FastClick.attach(document.body);
+	    $.ajaxSetup({
+                timeout: 4000,
+                retryAfter: 7000
+            });
+
+            function addFavorite(movieID) {
+                $.ajax({
+                    type: "POST",
+                    url: "/favorites/add",
+                    data: {
+                        movieID: movieID
+                    },
+                    error: function() {
+                        console.error("Error adding favorite");
+                        setTimeout (addFavorite(movieID), $.ajaxSetup().retryAfter);
+                    }
+                }).done(function(msg) {
+                    console.log(msg);
+                });
+            }
+            function rmFavorite(movieID) {
+                $.ajax({
+                    type: "POST",
+                    url: "/favorites/remove",
+                    data: {
+                        movieID: movieID
+                    },
+                    error: function() {
+                        console.error("Error removing favorite");
+                        setTimeout (rmFavorite(movieID), $.ajaxSetup().retryAfter);
+                    }
+                }).done(function(msg) {
+                    console.log(msg);
+                });
+            }
 
             $(".movie").click(function() {
                 $(this).toggleClass("favorited");
@@ -22,29 +57,9 @@
                 var movieID = $(this).data("id");
 
                 if ($(this).hasClass("favorited")) {
-                    $.ajax({
-                        type: "POST",
-                        url: "/favorites/add",
-                        data: {
-                            movieID: movieID
-                        }
-                    }).done(function(msg) {
-                        console.log(msg);
-                    }).fail(function() {
-                        console.err("Error adding favorite");
-                    });
+                    addFavorite(movieID);
                 } else {
-                    $.ajax({
-                        type: "POST",
-                        url: "/favorites/remove",
-                        data: {
-                            movieID: movieID
-                        }
-                    }).done(function(msg) {
-                        console.log(msg);
-                    }).fail(function() {
-                        console.err("Error removing favorite");
-                    });
+                    rmFavorite(movieID);
                 }
             });
         });
